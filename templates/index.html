@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,23 +6,41 @@
 </head>
 <body>
   <h1>Upload an Image</h1>
-  <input type="file" id="fileInput">
+
+  <input type="file" id="fileInput" accept="image/*" required>
   <button onclick="uploadImage()">Predict</button>
+
   <p id="result"></p>
 
   <script>
     async function uploadImage() {
-      let file = document.getElementById("fileInput").files[0];
+      const file = document.getElementById("fileInput").files[0];
+
+      if (!file) {
+        document.getElementById("result").innerText = "Please select an image first.";
+        return;
+      }
+
       let formData = new FormData();
       formData.append("file", file);
 
-      let response = await fetch("/predict", {
-        method: "POST",
-        body: formData
-      });
+      try {
+        const response = await fetch("/predict", {
+          method: "POST",
+          body: formData
+        });
 
-      let result = await response.json();
-      document.getElementById("result").innerText = "Prediction: " + result.class;
+        if (!response.ok) {
+          document.getElementById("result").innerText = "Server error: " + response.status;
+          return;
+        }
+
+        const result = await response.json();
+        document.getElementById("result").innerText = "Prediction: " + result.class;
+
+      } catch (error) {
+        document.getElementById("result").innerText = "Error: " + error;
+      }
     }
   </script>
 </body>
