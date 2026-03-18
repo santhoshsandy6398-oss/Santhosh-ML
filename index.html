@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dog vs Cat Classifier</title>
+</head>
+<body>
+  <h1>Upload an Image</h1>
+  <input type="file" id="fileInput">
+  <button onclick="uploadImage()">Predict</button>
+  <p id="result"></p>
+
+  <script>
+    async function uploadImage() {
+      let file = document.getElementById("fileInput").files[0];
+      let formData = new FormData();
+      formData.append("file", file);
+
+      let response = await fetch("/predict", {
+        method: "POST",
+        body: formData
+      });
+
+      let result = await response.json();
+      document.getElementById("result").innerText = "Prediction: " + result.class;
+    }
+  </script>
+</body>
+</html>
